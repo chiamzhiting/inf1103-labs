@@ -66,3 +66,26 @@ print("===========================")
 print("Username: ", username)
 print("Age: ", age)
 print("Category: ", category)
+
+#2
+##a. it shows the prompt text, waits for you to type and stores what you typed im the variable
+##b. dynamic, the output depends on what the user types, not a fixed value in the code
+##c.  run it a few times with different values - it prints back whatever you typed, since input() always treats it as text 
+
+#3
+
+#Activity 5
+username = input("Enter Username: ")
+age = int(input("Enter Age: "))
+category = input("Enter Content Category: ")
+
+print("\nInstagram Profile")
+print("===========================")
+print("Username: ", username)
+print("Age: ", age)
+print("Category: ", category)
+
+if age>40 and category == "fun":
+    print("You are old what is fun for you??")
+
+#
