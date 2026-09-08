@@ -40,5 +40,18 @@ print("Followers:", followers)
 followers = 100
 
 followers += 50
-print("Day1:", followers)
+print("Day 1:", followers)
+
+followers += 20
+print("Day 2:", followers)
+
+followers += 10
+print("Day 3:", followers)
+
+#2
+##a. no
+##b. the current value
+##c. they add or subtract from the variable and save the result back into it 
+
+#3
 
