@@ -88,4 +88,6 @@ print("Category: ", category)
 if age>40 and category == "fun":
     print("You are old what is fun for you??")
 
-#
+#3.
+##a. always a string even for numbers thats why age uses int() to convert it
+##b. with if, using and/== to test multiple things at once - here, age>40 and category is "fun". Both must be true for the code inside to run
