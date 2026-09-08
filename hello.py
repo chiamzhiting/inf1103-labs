@@ -11,38 +11,34 @@ print("===========================")
 ##b. top to bottom
 ##c. output appear in terminal 
 
-#Q4 #git add
+#Q4 #git add hello.py
 
-#
-#
-#
+#Q5
+#Q6
+#Q7
 
 #Activity 2
 #Q1
-# print("===========================")
-# print("Welcome here")
-# print("My first post!")
-# print("===========================")
 
-# username = "cool_creator"
-# bio = "Fun Blogger"
-# followers = 100
+username = "cool_creator"
+bio = "Fun Blogger"
+followers = 100
 
-# print("Username:", username)
-# print("Bio:", bio)
-# print("Followers:", followers)
+print("Username:", username)
+print("Bio:", bio)
+print("Followers:", followers)
 
-# #Q2
-# ##a. variables are used to store profile information about the profile
-# ##b. if the values changes, the printed output will also change to show the new information.
-# ##c. output appear in the terminal 
+#Q2
+##a. variables are used to store profile information about the profile
+##b. if the values changes, the printed output will also change to show the new information.
+##c. output appear in the terminal 
 
-# #Q3 #done
-# #Q4 #done
+#Q3 #done
+#Q4 #done
 
-# #Activity 3
-# followers = 100
+#Activity 3
+followers = 100
 
-# followers += 50
-# print("Day1:", followers)
+followers += 50
+print("Day1:", followers)
 
