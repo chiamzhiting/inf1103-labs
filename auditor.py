@@ -21,4 +21,3 @@ while True:
         print("Alert: Inventory exceeds 500 units! Stopping audit")
         print(f"Final Total Units Processed: {inventory}")
         break
-    
