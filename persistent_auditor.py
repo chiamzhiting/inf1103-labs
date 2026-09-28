@@ -57,3 +57,33 @@ def main():
 
     print("Final inventory:", inventory)
     print("Transaction history:", history)
+
+def save_inventory(total_units: int, history: list[int], filename: str = "inventory.txt") -> None:
+    """Save inventory total and history to file."""
+    with open(filename, "w") as f:
+        f.write(f"{total_units}\n")
+        for amount in history:
+            f.write(f"{amount}\n")
+
+def main():
+    inventory, history = load_inventory()
+    failed_attempts = 0
+    deliveries = len(history)
+
+    while True:
+        entry = get_valid_input()
+        if entry == "quit":
+            break
+        if entry is None:
+            failed_attempts += 1
+            continue
+
+        inventory = process_delivery(inventory, entry)
+        history.append(entry)
+        deliveries += 1
+        print(f"Transaction recorded: {entry} units")
+
+    print("Final inventory:", inventory)
+    print("Transaction history:", history)
+    save_inventory(inventory, history)
+    print("Inventory successfully saved to inventory.txt")
