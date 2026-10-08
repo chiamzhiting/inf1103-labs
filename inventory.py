@@ -26,3 +26,16 @@ def display_all(inventory):
     for item in inventory:
         print(f"ID: {item['id']} | Name: {item['name']} | Price: ${item['price']:.2f} | Stock: {item['stock']}")
     print("-" * 48)
+
+import json
+import os
+
+def load_inventory(filename="inventory.json"):
+    if os.path.exists(filename):
+        with open(filename, "r") as f:
+            return json.load(f)
+    return []
+
+def save_inventory(inventory, filename="inventory.json"):
+    with open(filename, "w") as f:
+        json.dump(inventory, f, indent=4)
