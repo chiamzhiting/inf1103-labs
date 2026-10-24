@@ -1,4 +1,4 @@
-class Inventory:
+class Inventory: #inventory
     """Manages a collection of Product objects."""
 
     def __init__(self):
