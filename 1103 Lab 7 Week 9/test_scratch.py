@@ -1,12 +1,10 @@
-from product import Product
 from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
+from can_be_shipped import CanBeShipped
 
-guitar = PhysicalProduct("P1", "Guitar", 499.0, 5, 3.5)
+for weight in (1, 3.5, 10):
+    item = PhysicalProduct("T", "Test", 1.0, 1, weight)
+    print(weight, "kg ->", item.calculate_shipping_cost())
+
 os_lic = DigitalProduct("D1", "Operating System", 99.0, 100, 4500)
-
-print(guitar.get_fulfilment_info())
-print(os_lic.get_fulfilment_info())
-
-# This should fail, because Product is now abstract
-product = Product("X", "Test", 1.0, 1)
+print("Digital can be shipped?", isinstance(os_lic, CanBeShipped))
