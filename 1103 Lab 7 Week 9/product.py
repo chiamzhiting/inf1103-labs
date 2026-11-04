@@ -1,5 +1,12 @@
-class Product:
-    """Represents and manages a single product."""
+from abc import ABC, abstractmethod
+
+
+class Product(ABC):
+    """Abstract base class representing and managing a single product.
+
+    Every product is either physical or digital, so Product itself can
+    never be instantiated directly.
+    """
 
     def __init__(self, product_id, name, price, stock):
         self.__product_id = product_id
@@ -39,3 +46,11 @@ class Product:
             "price": self.__price,
             "stock": self.__stock,
         }
+
+    @abstractmethod
+    def get_fulfilment_info(self):
+        """Return a message describing how this product is fulfilled.
+
+        No implementation here: every subclass must provide its own.
+        """
+        pass
