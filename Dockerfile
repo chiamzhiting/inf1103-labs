@@ -1,4 +1,3 @@
 FROM python:3.14-slim
 WORKDIR /app
-COPY auditor.py .
-CMD ["python", "auditor.py"]
+CMD ["python", "main.py"]
