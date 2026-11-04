@@ -2,6 +2,10 @@ from product import Product
 
 
 class DigitalProduct(Product):
+    """A downloadable product. It is not shipped, so it does not implement CanBeShipped."""
+
+    TYPE = "digital"
+
     def __init__(self, product_id, name, price, stock, download_size):
         super().__init__(product_id, name, price, stock)
         self.__download_size = download_size
@@ -10,7 +14,7 @@ class DigitalProduct(Product):
         return self.__download_size
 
     def display_information(self):
-        super().display_information()          # parent prints the common info
+        super().display_information()
         print(f"   Type: Digital | Download size: {self.__download_size} MB")
 
     def get_fulfilment_info(self):
@@ -18,9 +22,6 @@ class DigitalProduct(Product):
 
     def to_dict(self):
         data = super().to_dict()
-        data["type"] = "digital"
+        data["type"] = self.TYPE
         data["download_size"] = self.__download_size
         return data
-
-    def get_fulfilment_info(self):
-        return "Digital product: delivered digitally through a download link."
