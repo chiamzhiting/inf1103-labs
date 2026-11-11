@@ -49,3 +49,39 @@ print("Finding a product that does not exist returns:", inventory_a.find_product
 # Empty an inventory: the products are not destroyed.
 inventory_a.remove_product("D001")
 print("Inventory A is now empty, but antivirus still exists:", antivirus.get_name())
+
+# ---------- Section 4: Composition ----------
+from order import Order
+
+print("\n=== COMPOSITION: Order and OrderLine ===")
+keyboard = PhysicalProduct("P003", "Keyboard", 45.00, 25, 0.8, laptop.get_supplier())
+
+order_1 = Order("O001")
+order_1.add_order_line(laptop, 1)
+order_1.add_order_line(mouse, 2)
+order_1.add_order_line(antivirus, 3)
+order_1.display_information()
+print("Order 1 total is correct (1200 + 2*25.50 + 3*39.90 = 1370.70):",
+      round(order_1.calculate_total(), 2) == 1370.70)
+
+# PREDICT FIRST: the same Product goes into a second Order.
+# How many OrderLine objects and how many Product objects will exist?
+order_2 = Order("O002")
+order_2.add_order_line(laptop, 5)
+order_2.add_order_line(keyboard, 1)
+
+line_1 = order_1.get_order_lines()[0]
+line_2 = order_2.get_order_lines()[0]
+print("\nSame OrderLine object in both orders?", line_1 is line_2)
+print("Same Product object in both lines?   ", line_1.get_product() is line_2.get_product())
+print("Order 1 line id:", id(line_1), "| Order 2 line id:", id(line_2))
+print("Laptop id via line 1:", id(line_1.get_product()),
+      "| via line 2:", id(line_2.get_product()))
+
+print("\nRemoving the mouse line from Order 1 through the Order:")
+print("Removed?", order_1.remove_order_line("P002"))
+order_1.display_information()
+print("The mouse Product still exists:", mouse.get_name())
+
+print("\nOrder 2 is unaffected:")
+order_2.display_information()
