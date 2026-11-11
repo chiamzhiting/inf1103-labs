@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from supplier import Suppliergit
 
 
 class Product(ABC):
