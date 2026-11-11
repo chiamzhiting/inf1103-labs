@@ -58,7 +58,7 @@ def load_inventory(filename: str = DATA_FILE) -> tuple[Inventory, dict[str, Supp
                 except (KeyError, ValueError) as error:
                     print(f"Skipped a saved record ({error}).")
                     continue
-                if inventory.search_product(product.get_product_id()):
+                if inventory.find_product(product.get_product_id()):
                     print(f"Skipped duplicate product ID {product.get_product_id()}.")
                     continue
                 inventory.add_product(product)
@@ -93,8 +93,9 @@ def menu() -> None:
         print("2. Add Product")
         print("3. Update Stock")
         print("4. Search Product")
-        print("5. Save Inventory")
-        print("6. Exit")
+        print("5. Remove Product")
+        print("6. Save Inventory")
+        print("7. Exit")
         print("----------------------------")
 
         choice = input("Enter option: ")
@@ -109,7 +110,7 @@ def menu() -> None:
                 print("Invalid product type. Product not added.")
                 continue
             pid = input("Product ID: ")
-            if inventory.search_product(pid):
+            if inventory.find_product(pid):
                 print("A product with that ID already exists.")
                 continue
             name = input("Product Name: ")
@@ -145,7 +146,7 @@ def menu() -> None:
 
         elif choice == "3":
             pid = input("Enter Product ID: ")
-            product = inventory.search_product(pid)
+            product = inventory.find_product(pid)
             if product is None:
                 print("Product not found.")
                 continue
@@ -161,7 +162,7 @@ def menu() -> None:
 
         elif choice == "4":
             pid = input("Enter Product ID: ")
-            product = inventory.search_product(pid)
+            product = inventory.find_product(pid)
             if product:
                 print("\nProduct Found")
                 print("-" * 48)
@@ -174,11 +175,18 @@ def menu() -> None:
                 print("Product not found.")
 
         elif choice == "5":
+            pid = input("Enter Product ID to remove: ")
+            if inventory.remove_product(pid):
+                print("Product removed from the inventory.")
+            else:
+                print("Product not found.")
+
+        elif choice == "6":
             print("Saving inventory...")
             save_inventory(inventory)
             print("Inventory saved successfully.")
 
-        elif choice == "6":
+        elif choice == "7":
             print("Saving inventory before exit...")
             save_inventory(inventory)
             print("Thank you for using Inventory Management System.")
