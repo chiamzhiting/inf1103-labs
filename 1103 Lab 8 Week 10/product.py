@@ -46,6 +46,7 @@ class Product(ABC):
     def display_information(self) -> None:
         print(f"ID: {self.__product_id} | Name: {self.__name} | "
               f"Price: ${self.__price:.2f} | Stock: {self.__stock}")
+        self.__supplier.display_information()
 
     def to_dict(self) -> dict:
         """Convert to a plain dict, used by main when saving to JSON."""
@@ -54,6 +55,7 @@ class Product(ABC):
             "name": self.__name,
             "price": self.__price,
             "stock": self.__stock,
+            "supplier": self.__supplier.to_dict(),
         }
 
     @abstractmethod

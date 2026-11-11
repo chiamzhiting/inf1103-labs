@@ -18,3 +18,11 @@ class Supplier:
     def display_information(self) -> None:
         print(f"   Supplier: {self.__name} (ID: {self.__supplier_id}) | "
               f"Contact: {self.__contact_email}")
+
+    def to_dict(self) -> dict:
+        """Plain dict used when a Product is saved to JSON."""
+        return {
+            "id": self.__supplier_id,
+            "name": self.__name,
+            "contact_email": self.__contact_email,
+        }
