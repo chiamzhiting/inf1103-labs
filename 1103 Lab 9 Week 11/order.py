@@ -1,6 +1,7 @@
 from order_line import OrderLine
 from product import Product
-
+from discount_strategy import DiscountStrategy
+from no_discount import NoDiscount
 
 class Order:
     """A customer order made up of OrderLine objects.
@@ -9,9 +10,10 @@ class Order:
     pass in a Product and a quantity, never a ready-made OrderLine.
     """
 
-    def __init__(self, order_id: str):
+    def __init__(self, order_id: str, discount: DiscountStrategy | None = None):
         self.__order_id: str = order_id
         self.__order_lines: list[OrderLine] = []
+        self.__discount: DiscountStrategy = NoDiscount() if discount is None else discount
 
     def get_order_id(self) -> str:
         return self.__order_id
@@ -35,10 +37,14 @@ class Order:
                 self.__order_lines.remove(order_line)
                 return True
         return False
+    
+    def set_discount(self, discount: DiscountStrategy) -> None:
+        self.__discount = discount
 
     def calculate_total(self) -> float:
-        """Total value of the order, asking each OrderLine for its subtotal."""
-        return sum(line.calculate_subtotal() for line in self.__order_lines)
+        """Total after the discount strategy has been applied to the line subtotals."""
+        subtotal = sum(line.calculate_subtotal() for line in self.__order_lines)
+        return self.__discount.apply(subtotal)
 
     def display_information(self) -> None:
         print(f"Order {self.__order_id}")
