@@ -2,9 +2,9 @@ import json
 import os
 
 from inventory import Inventory
-from product_factory import ProductFactory
 from can_be_shipped import CanBeShipped
 from product import Product
+from product_factory import ProductFactory
 from supplier import Supplier
 
 DATA_FILE = "data/inventory.json"
@@ -34,6 +34,7 @@ def create_product_from_dict(item: dict, suppliers: dict[str, Supplier]) -> Prod
     extra = item.get("weight", item.get("download_size", 0.0))
     return ProductFactory.create(item.get("type"), item["id"], item["name"],
                                  item["price"], item["stock"], supplier, extra)
+
 
 def load_inventory(filename: str = DATA_FILE) -> tuple[Inventory, dict[str, Supplier]]:
     inventory = Inventory()
@@ -127,8 +128,13 @@ def menu() -> None:
                                                   supplier_name, supplier_email)
 
             type_name = "physical" if product_type == "1" else "digital"
-            inventory.add_product(ProductFactory.create(type_name, pid, name, price,
-                                                        stock, supplier, extra))
+            try:
+                product = ProductFactory.create(type_name, pid, name, price,
+                                                stock, supplier, extra)
+            except ValueError as error:
+                print(f"Product not added: {error}")
+                continue
+            inventory.add_product(product)
             print("Product added successfully!")
 
         elif choice == "3":
