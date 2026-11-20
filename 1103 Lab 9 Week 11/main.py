@@ -2,8 +2,7 @@ import json
 import os
 
 from inventory import Inventory
-from physical_product import PhysicalProduct
-from digital_product import DigitalProduct
+from product_factory import ProductFactory
 from can_be_shipped import CanBeShipped
 from product import Product
 from supplier import Supplier
@@ -12,15 +11,6 @@ DATA_FILE = "data/inventory.json"
 
 # Used for old saved records (from Lab 7) that have no supplier information.
 DEFAULT_SUPPLIER = {"id": "S000", "name": "Unknown Supplier", "contact_email": "n/a"}
-
-# Maps the saved "type" identifier to the code that builds that subclass.
-# A new product type only needs a new entry here (open for extension).
-PRODUCT_BUILDERS = {
-    PhysicalProduct.TYPE: lambda item, supplier: PhysicalProduct(
-        item["id"], item["name"], item["price"], item["stock"], item["weight"], supplier),
-    DigitalProduct.TYPE: lambda item, supplier: DigitalProduct(
-        item["id"], item["name"], item["price"], item["stock"], item["download_size"], supplier),
-}
 
 
 # ---------- Suppliers ----------
@@ -37,15 +27,13 @@ def get_or_create_supplier(suppliers: dict[str, Supplier], supplier_id: str,
 
 # ---------- File handling ----------
 def create_product_from_dict(item: dict, suppliers: dict[str, Supplier]) -> Product:
-    """Build the correct Product subclass from a saved record using its type."""
-    builder = PRODUCT_BUILDERS.get(item.get("type"))
-    if builder is None:
-        raise ValueError(f"unknown or missing product type: {item.get('type')}")
+    """Build the correct Product subclass from a saved record using the factory."""
     data = item.get("supplier", DEFAULT_SUPPLIER)
     supplier = get_or_create_supplier(suppliers, data["id"], data["name"],
                                       data["contact_email"])
-    return builder(item, supplier)
-
+    extra = item.get("weight", item.get("download_size", 0.0))
+    return ProductFactory.create(item.get("type"), item["id"], item["name"],
+                                 item["price"], item["stock"], supplier, extra)
 
 def load_inventory(filename: str = DATA_FILE) -> tuple[Inventory, dict[str, Supplier]]:
     inventory = Inventory()
@@ -66,10 +54,10 @@ def load_inventory(filename: str = DATA_FILE) -> tuple[Inventory, dict[str, Supp
         # fallback starter products (all from one shared Supplier object)
         supplier = get_or_create_supplier(suppliers, "S001", "TechSource Pte Ltd",
                                           "sales@techsource.com")
-        inventory.add_product(PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0, supplier))
-        inventory.add_product(PhysicalProduct("P002", "Mouse", 25.50, 40, 0.1, supplier))
-        inventory.add_product(PhysicalProduct("P003", "Keyboard", 45.00, 25, 0.8, supplier))
-        inventory.add_product(DigitalProduct("D001", "Antivirus License", 39.90, 200, 350, supplier))
+        inventory.add_product(ProductFactory.create("physical", "P001", "Laptop", 1200.00, 15, supplier, 2.0))
+        inventory.add_product(ProductFactory.create("physical", "P002", "Mouse", 25.50, 40, supplier, 0.1))
+        inventory.add_product(ProductFactory.create("physical", "P003", "Keyboard", 45.00, 25, supplier, 0.8))
+        inventory.add_product(ProductFactory.create("digital", "D001", "Antivirus License", 39.90, 200, supplier, 350))
     return inventory, suppliers
 
 
@@ -138,10 +126,9 @@ def menu() -> None:
                 supplier = get_or_create_supplier(suppliers, supplier_id,
                                                   supplier_name, supplier_email)
 
-            if product_type == "1":
-                inventory.add_product(PhysicalProduct(pid, name, price, stock, weight, supplier))
-            else:
-                inventory.add_product(DigitalProduct(pid, name, price, stock, download_size, supplier))
+            type_name = "physical" if product_type == "1" else "digital"
+            inventory.add_product(ProductFactory.create(type_name, pid, name, price,
+                                                        stock, supplier, extra))
             print("Product added successfully!")
 
         elif choice == "3":
