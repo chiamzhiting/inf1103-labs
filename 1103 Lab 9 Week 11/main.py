@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 
@@ -11,6 +12,20 @@ DATA_FILE = "data/inventory.json"
 
 # Used for old saved records (from Lab 7) that have no supplier information.
 DEFAULT_SUPPLIER = {"id": "S000", "name": "Unknown Supplier", "contact_email": "n/a"}
+
+
+# ---------- User input ----------
+def get_positive_float(prompt: str) -> float:
+    """Keep asking until the user enters a number greater than zero."""
+    while True:
+        try:
+            value = float(input(prompt))
+            if value <= 0:
+                print("Please enter a number greater than zero.")
+                continue
+            return value
+        except ValueError:
+            print("Please enter a valid number, e.g. 12.50")
 
 
 # ---------- Suppliers ----------
@@ -40,17 +55,23 @@ def load_inventory(filename: str = DATA_FILE) -> tuple[Inventory, dict[str, Supp
     inventory = Inventory()
     suppliers: dict[str, Supplier] = {}
     if os.path.exists(filename):
-        with open(filename, "r") as f:
-            for item in json.load(f):
-                try:
-                    product = create_product_from_dict(item, suppliers)
-                except (KeyError, ValueError) as error:
-                    print(f"Skipped a saved record ({error}).")
-                    continue
-                if inventory.find_product(product.get_product_id()):
-                    print(f"Skipped duplicate product ID {product.get_product_id()}.")
-                    continue
-                inventory.add_product(product)
+        try:
+            with open(filename, "r") as f:
+                items = json.load(f)
+        except json.JSONDecodeError:
+            print(f"Could not read {filename}: the file is empty or damaged. "
+                  "Starting with an empty inventory.")
+            return inventory, suppliers
+        for item in items:
+            try:
+                product = create_product_from_dict(item, suppliers)
+            except (KeyError, ValueError) as error:
+                print(f"Skipped a saved record ({error}).")
+                continue
+            if inventory.find_product(product.get_product_id()):
+                print(f"Skipped duplicate product ID {product.get_product_id()}.")
+                continue
+            inventory.add_product(product)
     else:
         # fallback starter products (all from one shared Supplier object)
         supplier = get_or_create_supplier(suppliers, "S001", "TechSource Pte Ltd",
@@ -71,6 +92,37 @@ def save_inventory(inventory: Inventory, filename: str = DATA_FILE) -> None:
         json.dump(data, f, indent=4)
 
 
+def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
+    """Load products from a CSV file through the ProductFactory.
+
+    A missing file is reported without crashing. A bad row is reported and
+    skipped, and loading carries on with the next row.
+    """
+    try:
+        file = open(path, newline="")
+    except FileNotFoundError:
+        print(f"Products file not found: {path}")
+    else:
+        loaded = 0
+        with file:
+            reader = csv.reader(file)
+            next(reader, None)  # skip the header row
+            for row in reader:
+                try:
+                    product_type, product_id, name, price, stock = row
+                    if inventory.find_product(product_id):
+                        raise ValueError(f"duplicate product ID {product_id}")
+                    product = ProductFactory.create(product_type, product_id, name,
+                                                    float(price), int(stock), supplier)
+                    inventory.add_product(product)
+                    loaded += 1
+                except ValueError as error:
+                    print(f"Skipped row {row}: {error}")
+        print(f"{loaded} products loaded.")
+    finally:
+        print("Load attempt finished.")
+
+
 # ---------- Menu ----------
 def menu() -> None:
     inventory, suppliers = load_inventory()
@@ -85,6 +137,7 @@ def menu() -> None:
         print("5. Remove Product")
         print("6. Save Inventory")
         print("7. Exit")
+        print("8. Import Products from CSV")
         print("----------------------------")
 
         choice = input("Enter option: ")
@@ -103,8 +156,8 @@ def menu() -> None:
                 print("A product with that ID already exists.")
                 continue
             name = input("Product Name: ")
+            price = get_positive_float("Price: ")
             try:
-                price = float(input("Price: "))
                 stock = int(input("Stock Quantity: "))
                 if product_type == "1":
                     weight = float(input("Weight (kg): "))
@@ -184,6 +237,12 @@ def menu() -> None:
             save_inventory(inventory)
             print("Thank you for using Inventory Management System.")
             break
+
+        elif choice == "8":
+            path = input("CSV file path: ")
+            supplier = get_or_create_supplier(suppliers, "S001", "TechSource Pte Ltd",
+                                              "sales@techsource.com")
+            load_products(path, inventory, supplier)
 
         else:
             print("Invalid option. Try again.")
